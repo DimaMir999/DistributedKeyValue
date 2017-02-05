@@ -22,7 +22,7 @@ public class PropertyReader {
                 fis = new FileInputStream("src/main/resources/" + fileName);
                 properties.load(fis);
             } catch (IOException e) {
-                // Место для лога
+                // Log
             }
         }
 
