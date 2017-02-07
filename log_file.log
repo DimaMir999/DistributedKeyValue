@@ -1,0 +1,9 @@
+2017-02-07 21:23:26:584 INFO  org.dimamir999.Starter:18 - Port is set to 9999.
+2017-02-07 21:24:00:020 INFO  org.dimamir999.Starter:18 - Port is set to 9999.
+2017-02-07 21:24:24:615 INFO  org.dimamir999.service.OperationService:35 - Object added - key: '1', value:'one'.
+2017-02-07 21:24:36:500 INFO  org.dimamir999.service.OperationService:81 - Object deleted - key: '1', value:'one'.
+2017-02-07 21:24:42:501 INFO  org.dimamir999.service.OperationService:35 - Object added - key: '2', value:'two'.
+2017-02-07 21:33:35:944 INFO  org.dimamir999.Starter:18 - Port is set to 9999.
+2017-02-07 21:48:20:612 INFO  org.dimamir999.service.OperationService:45 - Object returned - key: '2', value:'two'.
+2017-02-07 21:48:46:926 INFO  org.dimamir999.Starter:18 - Port is set to 9999.
+2017-02-07 21:48:56:128 INFO  org.dimamir999.service.OperationService:35 - Object added - key: '3', value:'three'.

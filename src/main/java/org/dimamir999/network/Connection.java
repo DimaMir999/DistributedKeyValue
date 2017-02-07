@@ -1,5 +1,7 @@
 package org.dimamir999.network;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimamir999.controller.CommandController;
 import org.dimamir999.model.Command;
 import org.dimamir999.service.CommandParser;
@@ -13,7 +15,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class Connection {
-
+    private static final Logger log = LogManager.getLogger(Connection.class);
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
@@ -25,8 +27,8 @@ public class Connection {
         this.out = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void startHandleInputMessages(CommandController controller, CommandParser parser){
-        connectionThread = new Thread(new ClientConnectionRunnable(this, controller, parser));
+    public void startHandleInputMessages(CommandController controller, CommandParser parser) {
+        connectionThread = new Thread(new Connection.ClientConnectionRunnable(this, controller, parser));
         connectionThread.start();
     }
 
@@ -43,8 +45,8 @@ public class Connection {
         socket.close();
     }
 
-    private class ClientConnectionRunnable implements Runnable{
-
+    private class ClientConnectionRunnable implements Runnable {
+        private final Logger log = LogManager.getLogger(Connection.ClientConnectionRunnable.class);
         private Connection connection;
         private CommandController commandController;
         private CommandParser parser;
@@ -56,13 +58,14 @@ public class Connection {
         }
 
         public void run() {
-            while (true)
+            while(true) {
                 try {
-                    String string = connection.read();
-                    Command command = parser.parseCommand(string);
-                    List<String> params = command.getParams();
-                    String key, value;
-                    switch (command.getCommandType()){
+                    String e = this.connection.read();
+                    Command command = this.parser.parseCommand(e);
+                    List params = command.getParams();
+                    String key;
+                    String value;
+                    switch(command.getCommandType()) {
                         case CREATE:
                             key = command.getParams().get(0);
                             value = command.getParams().get(1);
@@ -86,12 +89,12 @@ public class Connection {
                             connection.write("OK\n");
                             break;
                         default:
-                            System.out.print("ERROR");
+                            this.log.error("No command type match found");
                     }
                 } catch (Exception e) {
-                    System.out.println("BAD ERROR");
                     e.printStackTrace();
                 }
+            }
         }
     }
 }
