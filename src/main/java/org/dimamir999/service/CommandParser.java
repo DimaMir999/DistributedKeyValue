@@ -8,7 +8,7 @@ import org.dimamir999.model.CommandType;
 import java.util.ArrayList;
 
 public class CommandParser {
-    private static final Logger log = LogManager.getLogger(CommandParser.class);
+    private static final Logger LOG = LogManager.getLogger(CommandParser.class);
 
     public Command parseCommand(String input) {
         CommandType commandType = null;
@@ -21,12 +21,12 @@ public class CommandParser {
         }
 
         if(commandType == null) {
-            log.error("No such command");
+            LOG.error("No such command");
             throw new IllegalArgumentException();
         }
 
         if(tokens.length == 1) {
-            log.error("No key specified");
+            LOG.error("No key specified");
             throw new IllegalArgumentException();
         }
 

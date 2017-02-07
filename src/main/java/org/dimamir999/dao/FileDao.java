@@ -2,17 +2,15 @@ package org.dimamir999.dao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dimamir999.model.KeyValue;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class FileDao {
-    private static final Logger log = LogManager.getLogger(FileDao.class);
+    private static final Logger LOG = LogManager.getLogger(FileDao.class);
 
     public String read(String fileName) throws IOException {
         StringBuilder data = new StringBuilder();
@@ -35,8 +33,8 @@ public class FileDao {
             fw = new FileWriter(fileName);
             bw = new BufferedWriter(fw);
             bw.write(data);
-        } catch (IOException var14) {
-            log.error("I/O exception");
+        } catch (IOException ex) {
+            LOG.error("File can't be read", ex);
         } finally {
             try {
                 if(bw != null) {
@@ -47,8 +45,7 @@ public class FileDao {
                     fw.close();
                 }
             } catch (IOException ex) {
-                log.error("I/O exception");
-                ex.printStackTrace();
+                LOG.error("File can't be closed", ex);
             }
 
         }

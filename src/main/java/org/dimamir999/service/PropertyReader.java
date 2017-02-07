@@ -11,7 +11,7 @@ import java.util.Properties;
  * Created by SKY-PC on 07.02.2017.
  */
 public class PropertyReader {
-    private static final Logger log = LogManager.getLogger(PropertyReader.class);
+    private static final Logger LOG = LogManager.getLogger(PropertyReader.class);
     private FileInputStream fis;
     private Properties properties = new Properties();
     private String fileName;
@@ -26,7 +26,7 @@ public class PropertyReader {
                 fis = new FileInputStream("src/main/resources/" + fileName);
                 properties.load(fis);
             } catch (IOException e) {
-                log.error("File not found");
+                LOG.error("File not found", e);
             }
         }
 

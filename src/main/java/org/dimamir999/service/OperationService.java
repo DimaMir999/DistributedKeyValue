@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class OperationService {
-    private static final Logger log = LogManager.getLogger(OperationService.class);
+    private static final Logger LOG = LogManager.getLogger(OperationService.class);
     private static final String DATA_FILE = "data";
     private FileDao fileDao = new FileDao();
     private StringKeyValueConverter stringKeyValueConverter = new StringKeyValueConverter();
@@ -23,7 +23,7 @@ public class OperationService {
             try {
                 dataFile.createNewFile();
             } catch (IOException e) {
-                log.error("New file creating error");
+                LOG.error("New file creating error", e);
                 throw new RuntimeErrorException(null);
             }
         }
@@ -32,7 +32,7 @@ public class OperationService {
 
     public KeyValue<String, String> create(KeyValue<String, String> keyValue) throws IOException {
         fileDao.append(stringKeyValueConverter.encode(keyValue), DATA_FILE);
-        log.info("Object added - key: '" + keyValue.getKey() + "', value:'" + keyValue.getValue() + "'");
+        LOG.info("Object added - key: '" + keyValue.getKey() + "', value:'" + keyValue.getValue() + "'");
         return keyValue;
     }
 
@@ -42,7 +42,7 @@ public class OperationService {
         for(String line : allData.split("\n")) {
             KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
             if((keyValue.getKey()).equals(key)) {
-                log.info("Object returned - key: '" + key + "', value:'" + keyValue.getValue() + "'");
+                LOG.info("Object returned - key: '" + key + "', value:'" + keyValue.getValue() + "'");
                 return keyValue;
             }
         }
@@ -61,7 +61,7 @@ public class OperationService {
                 String newLine = stringKeyValueConverter.encode(keyValue);
                 String newData = allData.replace(oldLine, newLine);
                 fileDao.write(newData, DATA_FILE);
-                log.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
+                LOG.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
                 return oldKeyValue;
             }
         }
@@ -78,7 +78,7 @@ public class OperationService {
                 String oldLine = stringKeyValueConverter.encode(oldKeyValue);
                 String newData = allData.replace(oldLine, "");
                 fileDao.write(newData, DATA_FILE);
-                log.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
+                LOG.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
                 return oldKeyValue;
             }
         }

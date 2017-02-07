@@ -10,15 +10,14 @@ import org.dimamir999.service.OperationServiceException;
 import java.io.IOException;
 
 public class CommandController {
-    private static final Logger log = LogManager.getLogger(CommandController.class);
+    private static final Logger LOG = LogManager.getLogger(CommandController.class);
     private OperationService operationService = new OperationService();
 
     public String read(String key) throws OperationServiceException {
         try {
             return operationService.get(key).getValue();
         } catch (IOException e) {
-            log.error("Can't perform read operation");
-            e.printStackTrace();
+            LOG.error("Can't perform read operation", e);
             throw new OperationServiceException("Can't perform read operation", e);
         }
     }
@@ -27,8 +26,7 @@ public class CommandController {
         try {
             operationService.create(new KeyValue<>(key, value));
         } catch (IOException e) {
-            log.error("Can't perform create operation");
-            e.printStackTrace();
+            LOG.error("Can't perform create operation", e);
             throw new OperationServiceException("Can't perform create operation", e);
         }
     }
@@ -37,8 +35,7 @@ public class CommandController {
         try {
             operationService.update(new KeyValue<>(key, value));
         } catch (IOException e) {
-            log.error("Can't perform update operation");
-            e.printStackTrace();
+            LOG.error("Can't perform update operation", e);
             throw new OperationServiceException("Can't perform update operations", e);
         }
     }
@@ -47,8 +44,7 @@ public class CommandController {
         try {
             operationService.delete(key);
         } catch (IOException e) {
-            log.error("Can't perform delete operation");
-            e.printStackTrace();
+            LOG.error("Can't perform delete operation", e);
             throw new OperationServiceException("Can't perform delete operations", e);
         }
     }

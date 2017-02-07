@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.dimamir999.controller.CommandController;
 import org.dimamir999.model.Command;
 import org.dimamir999.service.CommandParser;
-import org.dimamir999.service.OperationService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.net.Socket;
 import java.util.List;
 
 public class Connection {
-    private static final Logger log = LogManager.getLogger(Connection.class);
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
@@ -46,7 +44,7 @@ public class Connection {
     }
 
     private class ClientConnectionRunnable implements Runnable {
-        private final Logger log = LogManager.getLogger(Connection.ClientConnectionRunnable.class);
+        private final Logger LOG = LogManager.getLogger(Connection.ClientConnectionRunnable.class);
         private Connection connection;
         private CommandController commandController;
         private CommandParser parser;
@@ -66,32 +64,32 @@ public class Connection {
                     String key, value;
                     switch(command.getCommandType()) {
                         case CREATE:
-                            key = command.getParams().get(0);
-                            value = command.getParams().get(1);
+                            key = params.get(0);
+                            value = params.get(1);
                             commandController.create(key, value);
                             connection.write("OK\n");
                             break;
                         case READ:
-                            key = command.getParams().get(0);
+                            key = params.get(0);
                             String answer = commandController.read(key);
                             connection.write(answer + "\n");
                             break;
                         case UPDATE:
-                            key = command.getParams().get(0);
-                            value = command.getParams().get(1);
+                            key = params.get(0);
+                            value = params.get(1);
                             commandController.update(key, value);
                             connection.write("OK\n");
                             break;
                         case DELETE:
-                            key = command.getParams().get(0);
+                            key = params.get(0);
                             commandController.delete(key);
                             connection.write("OK\n");
                             break;
                         default:
-                            this.log.error("No command type match found");
+                            LOG.warn("No command type match found");
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOG.error("Unexpected error", e);
                 }
             }
         }
