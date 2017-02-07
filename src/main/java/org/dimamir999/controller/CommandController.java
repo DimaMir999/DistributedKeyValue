@@ -13,9 +13,6 @@ public class CommandController {
     private static final Logger log = LogManager.getLogger(CommandController.class);
     private OperationService operationService = new OperationService();
 
-    public CommandController() {
-    }
-
     public String read(String key) throws OperationServiceException {
         try {
             return operationService.get(key).getValue();
@@ -28,7 +25,7 @@ public class CommandController {
 
     public void create(String key, String value) throws OperationServiceException {
         try {
-            this.operationService.create(new KeyValue(key, value));
+            operationService.create(new KeyValue<>(key, value));
         } catch (IOException e) {
             log.error("Can't perform create operation");
             e.printStackTrace();
@@ -38,7 +35,7 @@ public class CommandController {
 
     public void update(String key, String value) throws OperationServiceException {
         try {
-            this.operationService.update(new KeyValue(key, value));
+            operationService.update(new KeyValue<>(key, value));
         } catch (IOException e) {
             log.error("Can't perform update operation");
             e.printStackTrace();
@@ -48,7 +45,7 @@ public class CommandController {
 
     public void delete(String key) throws OperationServiceException {
         try {
-            this.operationService.delete(key);
+            operationService.delete(key);
         } catch (IOException e) {
             log.error("Can't perform delete operation");
             e.printStackTrace();

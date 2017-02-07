@@ -57,7 +57,7 @@ public class FileDao {
     }
 
     public boolean append(String data, String fileName) throws IOException {
-        String dataInFile = this.read(fileName);
-        return this.write(dataInFile + data, fileName);
+        String dataInFile = read(fileName);
+        return write(dataInFile + data, fileName);
     }
 }

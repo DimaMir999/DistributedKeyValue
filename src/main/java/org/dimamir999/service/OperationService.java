@@ -40,7 +40,7 @@ public class OperationService {
         String allData = fileDao.read(DATA_FILE);
 
         for(String line : allData.split("\n")) {
-            KeyValue keyValue = stringKeyValueConverter.decode(line);
+            KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
             if((keyValue.getKey()).equals(key)) {
                 log.info("Object returned - key: '" + key + "', value:'" + keyValue.getValue() + "'");
                 return keyValue;
@@ -55,7 +55,7 @@ public class OperationService {
         String key = keyValue.getKey();
 
         for(String line : allData.split("\n")) {
-            KeyValue oldKeyValue = stringKeyValueConverter.decode(line);
+            KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
             if((oldKeyValue.getKey()).equals(key)) {
                 String oldLine = stringKeyValueConverter.encode(oldKeyValue);
                 String newLine = stringKeyValueConverter.encode(keyValue);
@@ -73,7 +73,7 @@ public class OperationService {
         String allData = fileDao.read(DATA_FILE);
 
         for(String line : allData.split("\n")) {
-            KeyValue oldKeyValue = stringKeyValueConverter.decode(line);
+            KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
             if((oldKeyValue.getKey()).equals(key)) {
                 String oldLine = stringKeyValueConverter.encode(oldKeyValue);
                 String newData = allData.replace(oldLine, "");

@@ -10,9 +10,6 @@ import java.util.ArrayList;
 public class CommandParser {
     private static final Logger log = LogManager.getLogger(CommandParser.class);
 
-    public CommandParser() {
-    }
-
     public Command parseCommand(String input) {
         CommandType commandType = null;
         String[] tokens = input.split(" ");
@@ -26,19 +23,18 @@ public class CommandParser {
         if(commandType == null) {
             log.error("No such command");
             throw new IllegalArgumentException();
+        }
 
-        } else if(tokens.length == 1) {
+        if(tokens.length == 1) {
             log.error("No key specified");
             throw new IllegalArgumentException();
-
-        } else {
-            ArrayList params = new ArrayList();
-
-            for(int i = 1; i < tokens.length; ++i) {
-                params.add(tokens[i]);
-            }
-
-            return new Command(commandType, params);
         }
+
+        ArrayList params = new ArrayList();
+        for(int i = 1; i < tokens.length; ++i) {
+            params.add(tokens[i]);
+        }
+
+        return new Command(commandType, params);
     }
 }

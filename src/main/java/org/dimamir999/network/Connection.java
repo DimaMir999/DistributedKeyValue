@@ -60,11 +60,10 @@ public class Connection {
         public void run() {
             while(true) {
                 try {
-                    String e = this.connection.read();
-                    Command command = this.parser.parseCommand(e);
-                    List params = command.getParams();
-                    String key;
-                    String value;
+                    String string = connection.read();
+                    Command command = parser.parseCommand(string);
+                    List<String> params = command.getParams();
+                    String key, value;
                     switch(command.getCommandType()) {
                         case CREATE:
                             key = command.getParams().get(0);
