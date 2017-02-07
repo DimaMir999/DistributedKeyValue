@@ -4,9 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- * Created by SKY-PC on 05.02.2017.
- */
 public class PropertyReader {
     private FileInputStream fis;
     private Properties properties = new Properties();
