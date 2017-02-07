@@ -28,7 +28,7 @@ public class Connection {
     }
 
     public void startHandleInputMessages(CommandController controller, CommandParser parser) {
-        connectionThread = new Thread(new Connection.ClientConnectionRunnable(this, controller, parser));
+        connectionThread = new Thread(new ClientConnectionRunnable(this, controller, parser));
         connectionThread.start();
     }
 
