@@ -10,9 +10,8 @@ import java.util.Properties;
 
 
 public class PropertyReader {
-private static final Logger LOG = LogManager.getLogger(PropertyReader.class);
-  
-public class PropertyReader {
+    private static final Logger LOG = LogManager.getLogger(PropertyReader.class);
+
     private FileInputStream fis;
     private Properties properties = new Properties();
     private String fileName;
