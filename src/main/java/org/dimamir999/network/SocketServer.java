@@ -18,6 +18,7 @@ public class SocketServer {
 
     public void start() throws IOException{
         ServerSocket serverSocket = new ServerSocket(port);
+        LOG.info("Server started. Port: " + port);
         while (true) {
             Socket socket = serverSocket.accept();
             handler.addNewConnection(new Connection(socket));
