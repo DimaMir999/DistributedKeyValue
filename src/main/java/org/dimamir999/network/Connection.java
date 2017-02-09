@@ -59,7 +59,7 @@ public class Connection {
             while(true) {
                 try {
                     String string = connection.read();
-                    LOG.info("'" + string + "' message received");
+                    LOG.info("Inbound message received");
                     Command command = parser.parseCommand(string);
                     List<String> params = command.getParams();
                     String key, value;
@@ -69,26 +69,26 @@ public class Connection {
                             value = params.get(1);
                             commandController.create(key, value);
                             connection.write("OK\n");
-                            LOG.info("'OK' message sent");
+                            LOG.info("Outbound message received");
                             break;
                         case READ:
                             key = params.get(0);
                             String answer = commandController.read(key);
                             connection.write(answer + "\n");
-                            LOG.info("'" + answer + "' message sent");
+                            LOG.info("Outbound message received");
                             break;
                         case UPDATE:
                             key = params.get(0);
                             value = params.get(1);
                             commandController.update(key, value);
                             connection.write("OK\n");
-                            LOG.info("'OK' message sent");
+                            LOG.info("Outbound message received");
                             break;
                         case DELETE:
                             key = params.get(0);
                             commandController.delete(key);
                             connection.write("OK\n");
-                            LOG.info("'OK' message sent");
+                            LOG.info("Outbound message received");
                             break;
                         default:
                             LOG.warn("No command type match found");

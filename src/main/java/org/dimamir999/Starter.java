@@ -12,6 +12,7 @@ public class Starter {
         PropertyReader propertyReader = new PropertyReader("distributed-key-value.properties");
         final int port = Integer.parseInt(propertyReader.getProperty("client.port"));
 
+
         SocketServer socketServer = new SocketServer(port);
         socketServer.start();
     }
