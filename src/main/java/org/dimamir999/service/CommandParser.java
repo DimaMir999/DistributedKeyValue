@@ -1,13 +1,16 @@
 package org.dimamir999.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimamir999.model.Command;
 import org.dimamir999.model.CommandType;
 
 import java.util.ArrayList;
 
 public class CommandParser {
+    private static final Logger LOG = LogManager.getLogger(CommandParser.class);
 
-    public Command parseCommand(String input){
+    public Command parseCommand(String input) {
         CommandType commandType = null;
         String[] tokens = input.split(" ");
         for(CommandType possibleType : CommandType.values()){
@@ -17,16 +20,18 @@ public class CommandParser {
             }
         }
 
-        if(commandType == null){
-            throw new IllegalArgumentException("No such command");
+        if(commandType == null) {
+            LOG.error("No such command");
+            throw new IllegalArgumentException();
         }
 
-        if(tokens.length == 1){
-            throw new IllegalArgumentException("No key specified");
+        if(tokens.length == 1) {
+            LOG.error("No key specified");
+            throw new IllegalArgumentException();
         }
 
-        ArrayList<String> params = new ArrayList<String>();
-        for(int i = 1; i < tokens.length; i++){
+        ArrayList params = new ArrayList();
+        for(int i = 1; i < tokens.length; ++i) {
             params.add(tokens[i]);
         }
 

@@ -1,9 +1,10 @@
 package org.dimamir999.network;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimamir999.controller.CommandController;
 import org.dimamir999.model.Command;
 import org.dimamir999.service.CommandParser;
-import org.dimamir999.service.OperationService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.net.Socket;
 import java.util.List;
 
 public class Connection {
-
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
@@ -25,7 +25,7 @@ public class Connection {
         this.out = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void startHandleInputMessages(CommandController controller, CommandParser parser){
+    public void startHandleInputMessages(CommandController controller, CommandParser parser) {
         connectionThread = new Thread(new ClientConnectionRunnable(this, controller, parser));
         connectionThread.start();
     }
@@ -43,8 +43,8 @@ public class Connection {
         socket.close();
     }
 
-    private class ClientConnectionRunnable implements Runnable{
-
+    private class ClientConnectionRunnable implements Runnable {
+        private final Logger LOG = LogManager.getLogger(Connection.ClientConnectionRunnable.class);
         private Connection connection;
         private CommandController commandController;
         private CommandParser parser;
@@ -56,42 +56,47 @@ public class Connection {
         }
 
         public void run() {
-            while (true)
+            while(true) {
                 try {
                     String string = connection.read();
+                    LOG.info("'" + string + "' message received");
                     Command command = parser.parseCommand(string);
                     List<String> params = command.getParams();
                     String key, value;
-                    switch (command.getCommandType()){
+                    switch(command.getCommandType()) {
                         case CREATE:
-                            key = command.getParams().get(0);
-                            value = command.getParams().get(1);
+                            key = params.get(0);
+                            value = params.get(1);
                             commandController.create(key, value);
                             connection.write("OK\n");
+                            LOG.info("'OK' message sent");
                             break;
                         case READ:
-                            key = command.getParams().get(0);
+                            key = params.get(0);
                             String answer = commandController.read(key);
                             connection.write(answer + "\n");
+                            LOG.info("'" + answer + "' message sent");
                             break;
                         case UPDATE:
-                            key = command.getParams().get(0);
-                            value = command.getParams().get(1);
+                            key = params.get(0);
+                            value = params.get(1);
                             commandController.update(key, value);
                             connection.write("OK\n");
+                            LOG.info("'OK' message sent");
                             break;
                         case DELETE:
-                            key = command.getParams().get(0);
+                            key = params.get(0);
                             commandController.delete(key);
                             connection.write("OK\n");
+                            LOG.info("'OK' message sent");
                             break;
                         default:
-                            System.out.print("ERROR");
+                            LOG.warn("No command type match found");
                     }
                 } catch (Exception e) {
-                    System.out.println("BAD ERROR");
-                    e.printStackTrace();
+                    LOG.error("Error in parsing the message", e);
                 }
+            }
         }
     }
 }

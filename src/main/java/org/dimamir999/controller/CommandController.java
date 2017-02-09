@@ -1,6 +1,8 @@
 package org.dimamir999.controller;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimamir999.model.KeyValue;
 import org.dimamir999.service.OperationService;
 import org.dimamir999.service.OperationServiceException;
@@ -8,14 +10,14 @@ import org.dimamir999.service.OperationServiceException;
 import java.io.IOException;
 
 public class CommandController {
-
+    private static final Logger LOG = LogManager.getLogger(CommandController.class);
     private OperationService operationService = new OperationService();
 
     public String read(String key) throws OperationServiceException {
         try {
             return operationService.get(key).getValue();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Can't perform read operation", e);
             throw new OperationServiceException("Can't perform read operation", e);
         }
     }
@@ -24,7 +26,7 @@ public class CommandController {
         try {
             operationService.create(new KeyValue<>(key, value));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Can't perform create operation", e);
             throw new OperationServiceException("Can't perform create operation", e);
         }
     }
@@ -33,7 +35,7 @@ public class CommandController {
         try {
             operationService.update(new KeyValue<>(key, value));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Can't perform update operation", e);
             throw new OperationServiceException("Can't perform update operations", e);
         }
     }
@@ -42,7 +44,7 @@ public class CommandController {
         try {
             operationService.delete(key);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Can't perform delete operation", e);
             throw new OperationServiceException("Can't perform delete operations", e);
         }
     }
