@@ -9,5 +9,6 @@
 .idea_modules/
 
 data
+temp_data
 HELP
 log_file.log
