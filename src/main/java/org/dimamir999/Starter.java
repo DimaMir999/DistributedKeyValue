@@ -10,10 +10,7 @@ public class Starter {
     public static void main(String[] args) throws IOException {
         PropertyReader propertyReader = new PropertyReader("distributed-key-value.properties");
         final int port = Integer.parseInt(propertyReader.getProperty("client.port"));
-        final int TIMEOUT = Integer.parseInt(propertyReader.getProperty("merging.timeout"));
 
-        Thread fileMergerThread = new Thread(new FileMerger(TIMEOUT));
-        fileMergerThread.start();
         SocketServer socketServer = new SocketServer(port);
         socketServer.start();
     }
