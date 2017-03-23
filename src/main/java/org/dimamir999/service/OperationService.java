@@ -12,8 +12,8 @@ import java.io.IOException;
 public class OperationService {
     private static final Logger LOG = LogManager.getLogger(OperationService.class);
     private PropertyReader propertyReader = new PropertyReader("distributed-key-value.properties");
-    private static final String tempFile = "temp_data";
-    private static final String dataFile = "data";
+    private final String tempFile = "temp_data";
+    private final String dataFile = "data";
     private FileDao fileDao = new FileDao();
     private StringKeyValueConverter stringKeyValueConverter = new StringKeyValueConverter();
 
@@ -24,13 +24,13 @@ public class OperationService {
     }
 
     public OperationService() {
-        File dataFile = new File(System.getProperty("user.dir") + "/" + tempFile);
+        File file = new File(System.getProperty("user.dir") + "/" + tempFile);
 
-        if(!dataFile.exists()) {
-            dataFile.getParentFile().mkdirs();
+        if(!file.exists()) {
+            file.getParentFile().mkdirs();
 
             try {
-                dataFile.createNewFile();
+                file.createNewFile();
             } catch (IOException e) {
                 LOG.error("New file creating error", e);
                 throw new RuntimeErrorException(null);
@@ -39,8 +39,8 @@ public class OperationService {
 
         final int TIMEOUT = Integer.parseInt(propertyReader.getProperty("merging.timeout"));
 
-        Thread fileMergerThread = new Thread(new FileMerger(OperationService.dataFile, tempFile, TIMEOUT));
-        fileMergerThread.start();
+        Thread fileMerger = new Thread(new FileMerger(dataFile, tempFile, TIMEOUT));
+        fileMerger.start();
     }
 
     public KeyValue<String, String> create(KeyValue<String, String> keyValue) throws IOException {
@@ -101,6 +101,13 @@ public class OperationService {
         return null;
     }
 
+    private void changeValue(KeyValue<String, String> oldKeyValue, KeyValue<String, String> keyValue, String data) throws IOException {
+        String oldLine = stringKeyValueConverter.encode(oldKeyValue);
+        String newLine = stringKeyValueConverter.encode(keyValue);
+        String newData = data.replace(oldLine, newLine);
+        fileDao.write(newData, dataFile);
+    }
+
     public KeyValue<String, String> update(KeyValue<String, String> keyValue) throws IOException {
         String key = keyValue.getKey();
 
@@ -110,10 +117,7 @@ public class OperationService {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    String oldLine = stringKeyValueConverter.encode(oldKeyValue);
-                    String newLine = stringKeyValueConverter.encode(keyValue);
-                    String newData = allData.replace(oldLine, newLine);
-                    fileDao.write(newData, dataFile);
+                    changeValue(oldKeyValue, keyValue, allData);
                     LOG.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -126,10 +130,7 @@ public class OperationService {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    String oldLine = stringKeyValueConverter.encode(oldKeyValue);
-                    String newLine = stringKeyValueConverter.encode(keyValue);
-                    String newData = allData.replace(oldLine, newLine);
-                    fileDao.write(newData, tempFile);
+                    changeValue(oldKeyValue, keyValue, tempData);
                     LOG.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -139,6 +140,12 @@ public class OperationService {
         return null;
     }
 
+    private void deleteValue(KeyValue<String, String> oldKeyValue, String data) throws IOException {
+        String oldLine = stringKeyValueConverter.encode(oldKeyValue) + "\n";
+        String newData = data.replace(oldLine, "");
+        fileDao.write(newData, dataFile);
+    }
+
     public KeyValue<String, String> delete(String key) throws IOException {
         String allData = fileDao.read(dataFile);
 
@@ -146,9 +153,7 @@ public class OperationService {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    String oldLine = stringKeyValueConverter.encode(oldKeyValue) + "\n";
-                    String newData = allData.replace(oldLine, "");
-                    fileDao.write(newData, dataFile);
+                    deleteValue(oldKeyValue, allData);
                     LOG.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -161,9 +166,7 @@ public class OperationService {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    String oldLine = stringKeyValueConverter.encode(oldKeyValue) + "\n";
-                    String newData = allData.replace(oldLine, "");
-                    fileDao.write(newData, tempFile);
+                    deleteValue(oldKeyValue, tempData);
                     LOG.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
                     return oldKeyValue;
                 }

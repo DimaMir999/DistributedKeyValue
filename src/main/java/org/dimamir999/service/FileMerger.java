@@ -12,15 +12,15 @@ import static java.lang.Thread.sleep;
 
 public class FileMerger implements Runnable {
     private static final Logger LOG = LogManager.getLogger(FileMerger.class);
-    private static String dataFile;
-    private static String mergedFile;
+    private String dataFile;
+    private String mergedFile;
     private int timeout;
     private FileDao fileDao = new FileDao();
 
     public FileMerger(String dataFile, String mergedFile, int timeout) {
         this.timeout = timeout;
-        FileMerger.dataFile = dataFile;
-        FileMerger.mergedFile = mergedFile;
+        this.dataFile = dataFile;
+        this.mergedFile = mergedFile;
 
         File file = new File(System.getProperty("user.dir") + "/" + dataFile);
         if(!file.exists()) {
@@ -61,9 +61,14 @@ public class FileMerger implements Runnable {
 
             try {
                 fileMerge();
+            } catch (IOException e) {
+                LOG.error("Error during merging files", e);
+            }
+
+            try {
                 fileClear();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Temp data file is not cleared", e);
             }
         }
     }
