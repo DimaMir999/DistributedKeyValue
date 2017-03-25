@@ -22,7 +22,7 @@ public class SocketServer {
         while (true) {
             Socket socket = serverSocket.accept();
             handler.addNewConnection(new Connection(socket));
-            LOG.info("New connection was made successful");
+            LOG.info("New connection was created successfully");
         }
     }
 }
