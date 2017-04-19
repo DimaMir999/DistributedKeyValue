@@ -17,9 +17,7 @@ public class OperationService {
     private FileDao fileDao = new FileDao();
     private StringKeyValueConverter stringKeyValueConverter = new StringKeyValueConverter();
 
-    private boolean fileIsNotEmpty(String fileName) throws IOException {
-        String fileString = fileDao.read(fileName);
-
+    private boolean fileIsNotEmpty(String fileString) throws IOException {
         return !fileString.equals("");
     }
 
@@ -75,7 +73,7 @@ public class OperationService {
     public KeyValue<String, String> create(KeyValue<String, String> keyValue) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> lineKeyValue = stringKeyValueConverter.decode(line);
                 if ((lineKeyValue.getKey()).equals(keyValue.getKey())) {
@@ -87,7 +85,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> lineKeyValue = stringKeyValueConverter.decode(line);
                 if ((lineKeyValue.getKey()).equals(keyValue.getKey())) {
@@ -105,7 +103,7 @@ public class OperationService {
     public KeyValue<String, String> get(String key) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
                 if ((keyValue.getKey()).equals(key)) {
@@ -117,7 +115,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
                 if ((keyValue.getKey()).equals(key)) {
@@ -142,7 +140,7 @@ public class OperationService {
 
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
@@ -155,7 +153,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
@@ -178,7 +176,7 @@ public class OperationService {
     public KeyValue<String, String> delete(String key) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
@@ -191,7 +189,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
