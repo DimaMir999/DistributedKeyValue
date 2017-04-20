@@ -41,31 +41,8 @@ public class OperationService {
         fileMerger.start();
     }
 
-    public OperationService(String dataFile, String tempFile) {
-        this.dataFile = dataFile;
-        this.tempFile = tempFile;
-
-        File file = new File(System.getProperty("user.dir") + "/" + tempFile);
-
-        if(!file.exists()) {
-            file.getParentFile().mkdirs();
-
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                LOG.error("New file creating error", e);
-                throw new RuntimeErrorException(null);
-            }
-        }
-
-        final int TIMEOUT = Integer.parseInt(propertyReader.getProperty("merging.timeout"));
-
-        Thread fileMerger = new Thread(new FileMerger(dataFile, tempFile, TIMEOUT));
-        fileMerger.start();
-    }
-
-    public OperationService(String dataFile, String tempFile, FileDao fileDao, StringKeyValueConverter stringKeyValueConverter) {
-        this(dataFile, tempFile);
+    public OperationService(FileDao fileDao, StringKeyValueConverter stringKeyValueConverter) {
+        this();
         this.fileDao = fileDao;
         this.stringKeyValueConverter = stringKeyValueConverter;
     }
