@@ -12,14 +12,12 @@ import java.io.IOException;
 public class OperationService {
     private static final Logger LOG = LogManager.getLogger(OperationService.class);
     private PropertyReader propertyReader = new PropertyReader("distributed-key-value.properties");
-    private final String tempFile = "temp_data";
-    private final String dataFile = "data";
+    private String tempFile = "temp_data";
+    private String dataFile = "data";
     private FileDao fileDao = new FileDao();
     private StringKeyValueConverter stringKeyValueConverter = new StringKeyValueConverter();
 
-    private boolean fileIsNotEmpty(String fileName) throws IOException {
-        String fileString = fileDao.read(fileName);
-
+    private boolean fileIsNotEmpty(String fileString) throws IOException {
         return !fileString.equals("");
     }
 
@@ -43,10 +41,16 @@ public class OperationService {
         fileMerger.start();
     }
 
+    public OperationService(FileDao fileDao, StringKeyValueConverter stringKeyValueConverter) {
+        this();
+        this.fileDao = fileDao;
+        this.stringKeyValueConverter = stringKeyValueConverter;
+    }
+
     public KeyValue<String, String> create(KeyValue<String, String> keyValue) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> lineKeyValue = stringKeyValueConverter.decode(line);
                 if ((lineKeyValue.getKey()).equals(keyValue.getKey())) {
@@ -58,7 +62,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> lineKeyValue = stringKeyValueConverter.decode(line);
                 if ((lineKeyValue.getKey()).equals(keyValue.getKey())) {
@@ -76,7 +80,7 @@ public class OperationService {
     public KeyValue<String, String> get(String key) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
                 if ((keyValue.getKey()).equals(key)) {
@@ -88,7 +92,7 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> keyValue = stringKeyValueConverter.decode(line);
                 if ((keyValue.getKey()).equals(key)) {
@@ -101,11 +105,11 @@ public class OperationService {
         return null;
     }
 
-    private void changeValue(KeyValue<String, String> oldKeyValue, KeyValue<String, String> keyValue, String data) throws IOException {
+    private void changeValue(KeyValue<String, String> oldKeyValue, KeyValue<String, String> keyValue, String data, String file) throws IOException {
         String oldLine = stringKeyValueConverter.encode(oldKeyValue);
         String newLine = stringKeyValueConverter.encode(keyValue);
         String newData = data.replace(oldLine, newLine);
-        fileDao.write(newData, dataFile);
+        fileDao.write(newData, file);
     }
 
     public KeyValue<String, String> update(KeyValue<String, String> keyValue) throws IOException {
@@ -113,11 +117,11 @@ public class OperationService {
 
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    changeValue(oldKeyValue, keyValue, allData);
+                    changeValue(oldKeyValue, keyValue, allData, dataFile);
                     LOG.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -126,11 +130,11 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    changeValue(oldKeyValue, keyValue, tempData);
+                    changeValue(oldKeyValue, keyValue, tempData, tempFile);
                     LOG.info("Object updated - key: '" + key + "', old value:'" + oldKeyValue.getValue() + "', new value:'" + keyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -140,20 +144,20 @@ public class OperationService {
         return null;
     }
 
-    private void deleteValue(KeyValue<String, String> oldKeyValue, String data) throws IOException {
+    private void deleteValue(KeyValue<String, String> oldKeyValue, String data, String file) throws IOException {
         String oldLine = stringKeyValueConverter.encode(oldKeyValue) + "\n";
         String newData = data.replace(oldLine, "");
-        fileDao.write(newData, dataFile);
+        fileDao.write(newData, file);
     }
 
     public KeyValue<String, String> delete(String key) throws IOException {
         String allData = fileDao.read(dataFile);
 
-        if (fileIsNotEmpty(dataFile)) {
+        if (fileIsNotEmpty(allData)) {
             for (String line : allData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    deleteValue(oldKeyValue, allData);
+                    deleteValue(oldKeyValue, allData, dataFile);
                     LOG.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
                     return oldKeyValue;
                 }
@@ -162,11 +166,11 @@ public class OperationService {
 
         String tempData = fileDao.read(tempFile);
 
-        if (fileIsNotEmpty(tempFile)) {
+        if (fileIsNotEmpty(tempData)) {
             for (String line : tempData.split("\n")) {
                 KeyValue<String, String> oldKeyValue = stringKeyValueConverter.decode(line);
                 if ((oldKeyValue.getKey()).equals(key)) {
-                    deleteValue(oldKeyValue, tempData);
+                    deleteValue(oldKeyValue, tempData, tempFile);
                     LOG.info("Object deleted - key: '" + key + "', value:'" + oldKeyValue.getValue() + "'");
                     return oldKeyValue;
                 }
